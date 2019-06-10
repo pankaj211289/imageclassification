@@ -4,6 +4,8 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
 public class Test {
 
+    NeuralNetwork network = null;
+    
 	public static void main(String[] args) throws IOException {
 		NeuralNetwork network = new NeuralNetwork();
 		MultiLayerNetwork layerNetwork = network.init();
