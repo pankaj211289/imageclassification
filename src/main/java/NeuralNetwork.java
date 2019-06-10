@@ -48,19 +48,6 @@ public class NeuralNetwork {
 		DataSetIterator numbersTrainData = new MnistDataSetIterator(BATCH_SIZE, 10000, true);
 		DataSetIterator numbersValidationData = new MnistDataSetIterator(BATCH_SIZE, 1000, true);
 		
-		//-------------
-		INDArray dataBuffer = numbersTrainData.next().getFeatures();
-		int[] img = dataBuffer.data().asInt();
-		System.out.println(img);
-		int[][] imgArr = new int[28][28];
-		
-		for(int i = 0; i < 28; i++) {
-			int startIndex = 28*i;
-			imgArr[i] = Arrays.copyOfRange(img, startIndex, startIndex + 28);
-		}
-		new ImageUtil().drawImage(imgArr);
-		//------------------
-		
 		for(int epoch = 1; epoch <= EPOCHS; epoch++) {
 			// train the network using training data
 			System.out.printf("Starting epoch %d, samples: %d", epoch, numbersTrainData.numExamples());
@@ -77,13 +64,14 @@ public class NeuralNetwork {
 		return new NeuralNetConfiguration.Builder()
 				.seed(SEED).weightInit(WeightInit.XAVIER)
 				.iterations(NUM_ITERATIONS)
-				.regularization(true).l2(0.0005).learningRate(.01)
+				.regularization(false).l2(0.0005).learningRate(.01)
+				.biasLearningRate(0.003)
 				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
 				.updater(new Nesterovs(0.9))
 				.list()
-				.layer(0, new ConvolutionLayer.Builder(5, 5) 
-						.stride(1, 1)
+				.layer(0, new ConvolutionLayer.Builder(5, 5)
 						.nIn(NUM_CHANNELS)
+						.stride(1, 1)
 						.nOut(20)
 						.activation(Activation.IDENTITY)
 						.build())
@@ -91,7 +79,9 @@ public class NeuralNetwork {
 						.kernelSize(2, 2)
 						.stride(2, 2)
 						.build())
-				.layer(2, new ConvolutionLayer.Builder(5, 5).stride(1, 1)
+				.layer(2, new ConvolutionLayer.Builder(5, 5)
+						.nIn(20)
+						.stride(1, 1)
 						.nOut(50)
 						.activation(Activation.IDENTITY)
 						.build())
@@ -101,9 +91,15 @@ public class NeuralNetwork {
 						.build())
 				.layer(4, new DenseLayer.Builder()
 						.activation(Activation.RELU)
-						.nOut(500)
+						.nIn(800)
+						.nOut(128)
 						.build())
-				.layer(5, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+				.layer(5, new DenseLayer.Builder()
+						.activation(Activation.RELU)
+						.nIn(128)
+						.nOut(64)
+						.build())
+				.layer(6, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
 						.activation(Activation.SOFTMAX)
 						.nOut(NUM_OUTPUTS)
 						.build())
