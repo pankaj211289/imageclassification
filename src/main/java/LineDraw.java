@@ -195,6 +195,17 @@ public class LineDraw {
                     public void actionPerformed(ActionEvent e) {
                         ((TestPane) paintArea).resetPoints();
                         ((TestPane)paintArea).paintComponent(paintArea.getGraphics());
+                        
+                        lab0Progress.setValue(0);
+                        lab1Progress.setValue(0);
+                        lab2Progress.setValue(0);
+                        lab3Progress.setValue(0);
+                        lab4Progress.setValue(0);
+                        lab5Progress.setValue(0);
+                        lab6Progress.setValue(0);
+                        lab7Progress.setValue(0);
+                        lab8Progress.setValue(0);
+                        lab9Progress.setValue(0);
                     }
                 });
                 

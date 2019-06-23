@@ -1,8 +1,5 @@
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-
 import org.datavec.image.loader.NativeImageLoader;
 import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator;
 import org.deeplearning4j.eval.Evaluation;
@@ -45,7 +42,7 @@ public class NeuralNetwork {
 	}
 	
 	public void trainNetwork(MultiLayerNetwork network) throws IOException {
-		DataSetIterator numbersTrainData = new MnistDataSetIterator(BATCH_SIZE, 10000, true);
+		DataSetIterator numbersTrainData = new MnistDataSetIterator(BATCH_SIZE, 20000, true);
 		DataSetIterator numbersValidationData = new MnistDataSetIterator(BATCH_SIZE, 1000, true);
 		
 		for(int epoch = 1; epoch <= EPOCHS; epoch++) {
@@ -133,15 +130,6 @@ public class NeuralNetwork {
 		System.out.println(evaluation.stats());
 		System.out.printf("Number of samples: %d, processing time [ms]: %d", samples, timeStop - timeStart);
 	}
-
-	public INDArray recognize(MultiLayerNetwork network, BufferedImage image) {
-		float[] normalizeImage = new ImageUtil().toMnistArray(image);
-
-		INDArray input = Nd4j.create(normalizeImage);
-		INDArray output = network.output(input);
-
-		return output;
-	}
 	
 	public INDArray recognize(MultiLayerNetwork network, File file) {
 		INDArray input = normalizeImage(file);
@@ -152,6 +140,9 @@ public class NeuralNetwork {
 	
 	// Normalize image
 	public INDArray normalizeImage(File f) {
+		
+		// Crop image
+		ImageUtil.drawImage(ImageUtil.cropImage(f), "screenshots.jpeg");
 		
 		// convert to numerical matrix
 		NativeImageLoader loader = new NativeImageLoader(28, 28, 1);
